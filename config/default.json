@@ -1,0 +1,16 @@
+{
+  "serviceName": "auth-service",
+  "mongodb": {
+    "dbName": "films",
+    "host": "cluster0.1cfhn.mongodb.net"
+  },
+  "frontEndUrl": "http://localhost:3000",
+  "authWebsiteUrl": "http://localhost:3000",
+  "invitationTokenExpire": "7d",
+  "resetTokenExpire": "7d",
+  "refreshTokenExpireInDays": {
+    "withRememberMe": 90,
+    "withoutRememberMe": 30
+  },
+  "accessTokenExpireInHours": 1
+}
