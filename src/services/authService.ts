@@ -15,13 +15,10 @@ import { RefreshTokenModel } from "../models/RefreshTokenModel";
 import config from "config";
 import { VerificationTokenModel } from "../models/verificationTokenModel";
 import { getEmailIdRegexQuery } from "../constants/common";
+import { sendEmail } from "../utils/email";
 
-export async function signUp(payload: {
-  emailId: string;
-  password: string;
-  rememberMe: boolean;
-}) {
-  const { emailId, password, rememberMe } = payload;
+export async function signUp(payload: { emailId: string; password: string }) {
+  const { emailId, password } = payload;
   const emailRegexQuery = getEmailIdRegexQuery(emailId);
   const userExists = await UserModel.findOne({
     emailId: emailRegexQuery,
@@ -38,28 +35,19 @@ export async function signUp(payload: {
     emailId,
   });
 
-  const frontendUrl = "http://localhost:3000";
+  const frontendUrl = config.get("frontEndUrl");
   const inviteToken = await getInviteToken({
     userId: user._id.toString(),
     password: password,
-    rememberMe: rememberMe,
   });
   const inviteLink = `${frontendUrl}/accept-invite?token=${inviteToken}`;
 
-  // const { error } = await apiClient.sendMail({
-  //   recipient: emailId,
-  //   mailTemplateName: MailTemplatesEnum.INVITE_CARBON_USER,
-  //   metaData: {
-  //     invitedByEmail: invitedBy?.emailId,
-  //     companyName: company?.name,
-  //     inviteLink
-  //   },
-  //   priority: MailPriorityEnum.HIGH
-  // });
-
-  // if (error) {
-  //   throw new createHttpError.InternalServerError("Couldn't send invite");
-  // }
+  await sendEmail({
+    from: "sanjeevmanagutti@gmail.com",
+    to: emailId,
+    subject: "Invite Link",
+    html: `<a href=${inviteLink}>Invite Link</a>`,
+  });
 
   return inviteLink;
 }
@@ -173,22 +161,16 @@ export async function forgotPassword(payload: { emailId: string }) {
     return;
   }
 
-  const frontendUrl = config.get("authWebsiteUrl");
+  const frontendUrl = config.get("frontEndUrl");
   const resetToken = await getResetToken({ emailId });
   const resetLink = `${frontendUrl}/reset-password?token=${resetToken}`;
 
-  // const { data, error } = await apiClient.sendMail({
-  //   recipient: emailId,
-  //   mailTemplateName: MailTemplatesEnum.RESET_PASSWORD,
-  //   metaData: {
-  //     resetPasswordLink: resetLink
-  //   },
-  //   priority: MailPriorityEnum.HIGH
-  // });
-  const error = "";
-  if (error) {
-    throw new createHttpError.InternalServerError("Couldn't send email");
-  }
+  await sendEmail({
+    from: "sanjeevmanagutti@gmail.com",
+    to: emailId,
+    subject: "Reset Password Link",
+    html: `<a href=${resetLink}>Reset Password Link</a>`,
+  });
 }
 
 export async function resetPassword(payload: {

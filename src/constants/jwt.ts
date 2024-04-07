@@ -140,7 +140,6 @@ export async function isValidRefreshToken(token: string) {
 export async function getInviteToken(payload: {
   userId: string;
   password: string;
-  rememberMe: boolean;
 }): Promise<string> {
   const expiresIn = "7d";
 

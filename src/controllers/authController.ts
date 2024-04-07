@@ -12,16 +12,15 @@ import { HttpError } from "http-errors";
 import Joi from "joi";
 
 export async function signup(req: Request, res: Response) {
-  const { emailId, password, rememberMe } = req.body;
+  const { emailId, password } = req.body;
   validateJoiSchema({
     schema: loginSchema,
-    data: { emailId, password, rememberMe },
+    data: { emailId, password },
   });
 
   const data = await authService.signUp({
     emailId,
     password,
-    rememberMe,
   });
   res.send(data);
 }

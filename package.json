@@ -32,6 +32,7 @@
     "lodash": "^4.17.21",
     "moment-timezone": "^0.5.45",
     "mongoose": "^6.4.1",
+    "nodemailer": "^6.9.13",
     "sqs-consumer": "^5.7.0"
   },
   "devDependencies": {
@@ -49,6 +50,7 @@
     "@types/lodash": "^4.14.182",
     "@types/moment-timezone": "^0.5.30",
     "@types/node": "^18.0.0",
+    "@types/nodemailer": "^6.4.14",
     "husky": "^8.0.0",
     "nodemon": "^2.0.18",
     "pretty-quick": "^3.1.3",

@@ -4,5 +4,5 @@ import { authApis } from "./authRoutes";
 
 export const apis = express.Router();
 
-apis.use("/films", filmsApis);
+apis.use("/films-service", filmsApis);
 apis.use("/auth-service", authApis);

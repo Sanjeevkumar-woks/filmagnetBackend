@@ -12,5 +12,6 @@
     "withRememberMe": 90,
     "withoutRememberMe": 30
   },
-  "accessTokenExpireInHours": 1
+  "accessTokenExpireInHours": 1,
+  "cookieDomain": "http://localhost:3000"
 }
