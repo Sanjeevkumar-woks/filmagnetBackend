@@ -6,17 +6,10 @@ import config from "config";
 export class AuthUtils {
   static commonCookieOptions = {
     httpOnly: true,
-    secure:
-      process.env.NODE_ENV === "production" ||
-      process.env.NODE_ENV === "development"
-        ? true
-        : false,
+    secure: false,
     domain:
-      process.env.NODE_ENV === "production" ||
-      process.env.NODE_ENV === "development"
-        ? config.get("cookieDomain")
-        : undefined,
-    sameSite: process.env.NODE_ENV === "development" ? "none" : "lax",
+      config.get("cookieDomain"),
+    sameSite: "none",
   } as any;
 
   static setRefreshTokenCookie(payload: {
@@ -26,32 +19,13 @@ export class AuthUtils {
   }) {
     const { res, refreshToken, rememberMe = false } = payload;
 
-    const refreshTokenCookieName =
-      process.env.NODE_ENV === "production"
-        ? "refreshToken"
-        : "refreshTokenDev";
-    res.cookie(refreshTokenCookieName, refreshToken, {
-      maxAge: rememberMe
-        ? moment
-            .duration(
-              config.get("refreshTokenExpireInDays.withRememberMe"),
-              "days"
-            )
-            .asMilliseconds()
-        : moment
-            .duration(
-              config.get("refreshTokenExpireInDays.withoutRememberMe"),
-              "days"
-            )
-            .asMilliseconds(),
-      ...this.commonCookieOptions,
-    });
+    const refreshTokenCookieName = "refreshTokenDev";
+    res.cookie(refreshTokenCookieName, refreshToken);
   }
 
   static setAccessTokenCookie(payload: { res: Response; accessToken: string }) {
     const { res, accessToken } = payload;
-    const accessTokenCookieName =
-      process.env.NODE_ENV === "production" ? "accessToken" : "accessTokenDev";
+    const accessTokenCookieName = "accessTokenDev";
 
     res.cookie(accessTokenCookieName, accessToken, {
       maxAge: moment
@@ -62,10 +36,7 @@ export class AuthUtils {
   }
 
   static clearAuthCookies(res: Response) {
-    const refreshTokenCookieName =
-      process.env.NODE_ENV === "production"
-        ? "refreshToken"
-        : "refreshTokenDev";
+    const refreshTokenCookieName = "refreshTokenDev";
     const accessTokenCookieName =
       process.env.NODE_ENV === "production" ? "accessToken" : "accessTokenDev";
 
@@ -73,18 +44,12 @@ export class AuthUtils {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production" ? true : false,
       domain:
-        process.env.NODE_ENV === "production" ||
-        process.env.NODE_ENV === "development"
-          ? config.get("cookieDomain")
-          : undefined,
+        config.get("cookieDomain")
     });
     res.clearCookie(accessTokenCookieName, {
       httpOnly: true,
-      domain:
-        process.env.NODE_ENV === "production" ||
-        process.env.NODE_ENV === "development"
-          ? config.get("cookieDomain")
-          : undefined,
+      domain: config.get("cookieDomain")
+
     });
   }
 }

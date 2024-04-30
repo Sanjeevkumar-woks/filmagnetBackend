@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 
 export interface IUser {
-  emailId: string;
+  email: string;
   passwordHash?: string;
   isVerified?: boolean;
 }
@@ -10,7 +10,7 @@ export interface IUserDocument extends IUser, mongoose.Document {}
 
 export const userSchema = new mongoose.Schema<IUser>(
   {
-    emailId: {
+    email: {
       type: String,
       required: true,
     },
@@ -28,6 +28,6 @@ export const userSchema = new mongoose.Schema<IUser>(
   }
 );
 
-userSchema.index({ emailId: 1 }, { unique: true });
+userSchema.index({ email: 1 }, { unique: true });
 
 export const UserModelName = "User";

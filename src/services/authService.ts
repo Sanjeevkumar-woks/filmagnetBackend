@@ -17,11 +17,11 @@ import { VerificationTokenModel } from "../models/verificationTokenModel";
 import { getEmailIdRegexQuery } from "../constants/common";
 import { sendEmail } from "../utils/email";
 
-export async function signUp(payload: { emailId: string; password: string }) {
-  const { emailId, password } = payload;
-  const emailRegexQuery = getEmailIdRegexQuery(emailId);
+export async function signUp(payload: { email: string; password: string }) {
+  const { email, password } = payload;
+  const emailRegexQuery = getEmailIdRegexQuery(email);
   const userExists = await UserModel.findOne({
-    emailId: emailRegexQuery,
+    email: emailRegexQuery,
     isVerified: true,
   });
 
@@ -32,7 +32,7 @@ export async function signUp(payload: { emailId: string; password: string }) {
   }
 
   const user = await UserModel.create({
-    emailId,
+    email,
   });
 
   const frontendUrl = config.get("frontEndUrl");
@@ -44,12 +44,12 @@ export async function signUp(payload: { emailId: string; password: string }) {
 
   await sendEmail({
     from: "sanjeevmanagutti@gmail.com",
-    to: emailId,
+    to: email,
     subject: "Invite Link",
     html: `<a href=${inviteLink}>Invite Link</a>`,
   });
 
-  return inviteLink;
+  return {inviteToken};
 }
 
 export async function verifyUser(payload: {
@@ -101,15 +101,18 @@ export async function verifyUser(payload: {
 }
 
 export async function login(payload: {
-  emailId: string;
+  email: string;
   password: string;
   rememberMe: boolean;
 }) {
-  const { emailId, password, rememberMe } = payload;
+  const { email, password, rememberMe } = payload;
+  console.log("email",email)
+  console.log("password",password)
+  console.log("rememberMe",rememberMe)
 
-  //const emailRegexQuery = getEmailIdRegexQuery(emailId);
+  const emailRegexQuery = getEmailIdRegexQuery(email);
   const userExists = await UserModel.findOne({
-    emailId: emailId,
+    email: emailRegexQuery,
     isVerified: true,
   });
 
@@ -137,7 +140,9 @@ export async function login(payload: {
     }),
   ]);
 
-  const expiresInDays = 30;
+   const expiresInDays = rememberMe
+    ? config.get<number>('refreshTokenExpireInDays.withRememberMe')
+    : config.get<number>('refreshTokenExpireInDays.withoutRememberMe');
 
   await RefreshTokenModel.create({
     token: refreshToken,
@@ -148,13 +153,13 @@ export async function login(payload: {
   return { refreshToken, accessToken };
 }
 
-export async function forgotPassword(payload: { emailId: string }) {
-  const { emailId } = payload;
+export async function forgotPassword(payload: { email: string }) {
+  const { email } = payload;
 
-  const emailRegexQuery = getEmailIdRegexQuery(emailId);
+  const emailRegexQuery = getEmailIdRegexQuery(email);
 
   const userExists = await UserModel.findOne({
-    emailId: emailRegexQuery,
+    email: emailRegexQuery,
     isVerified: true,
   });
   if (!userExists) {
@@ -162,12 +167,12 @@ export async function forgotPassword(payload: { emailId: string }) {
   }
 
   const frontendUrl = config.get("frontEndUrl");
-  const resetToken = await getResetToken({ emailId });
+  const resetToken = await getResetToken({ email });
   const resetLink = `${frontendUrl}/reset-password?token=${resetToken}`;
 
   await sendEmail({
     from: "sanjeevmanagutti@gmail.com",
-    to: emailId,
+    to: email,
     subject: "Reset Password Link",
     html: `<a href=${resetLink}>Reset Password Link</a>`,
   });
@@ -184,10 +189,10 @@ export async function resetPassword(payload: {
     throw new createHttpError.BadRequest("Link Invalid/expired");
   }
 
-  const emailRegexQuery = getEmailIdRegexQuery(data.emailId);
+  const emailRegexQuery = getEmailIdRegexQuery(data.email);
 
   const userExists = await UserModel.findOne({
-    emailId: emailRegexQuery,
+    email: emailRegexQuery,
     isActive: true,
   });
 

@@ -12,8 +12,8 @@ filmsApis.get(
 );
 
 filmsApis.get(
-  "/:id",
-  ensureAuthenticated,
+  "/movie",
+
   asyncFunction(FilmsController.getFilmById)
 );
 

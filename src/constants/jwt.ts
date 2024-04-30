@@ -7,7 +7,9 @@ export async function getRefreshToken(
   },
   rememberMe: boolean
 ): Promise<string> {
-  const expiresIn = rememberMe ? 90 : 30;
+  const expiresIn = rememberMe
+    ? config.get<number>('refreshTokenExpireInDays.withRememberMe')
+    : config.get<number>('refreshTokenExpireInDays.withoutRememberMe');
   const token = await jwt.sign(
     payload,
     process.env.JWT_REFRESH_PRIVATE_KEY as string,
@@ -21,7 +23,7 @@ export async function getRefreshToken(
 export async function getAccessToken(payload: {
   userId: string;
 }): Promise<string> {
-  const expiresIn = 30;
+ const expiresIn = config.get<string>('accessTokenExpireInHours');
 
   const token = await jwt.sign(payload, process.env.JWT_PRIVATE_KEY as string, {
     expiresIn: `${expiresIn}h`,
@@ -53,7 +55,7 @@ export async function isValidInviteToken(
 }
 
 export async function getResetToken(payload: {
-  emailId: string;
+  email: string;
 }): Promise<string> {
   const expiresIn = config.get<string>("resetTokenExpire");
 

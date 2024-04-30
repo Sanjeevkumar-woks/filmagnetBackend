@@ -17,6 +17,9 @@ export const ensureAuthenticated = async (
         ? req.cookies?.accessToken
         : req.cookies?.accessTokenDev;
 
+    console.log("refreshToken", refreshToken);
+    console.log("accessToken", accessToken);
+
     if (!refreshToken || !accessToken) {
       throw new createHttpError.Unauthorized("Unauthorized");
     }

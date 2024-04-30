@@ -1,8 +1,9 @@
 import Joi from "joi";
 
 export const loginSchema = Joi.object({
-  emailId: Joi.string().email().required(),
+  email: Joi.string().email().required(),
   password: Joi.string().required(),
+  rememberMe: Joi.boolean().optional().allow(true, false),
 });
 
 export const verifyUserSchema = Joi.object({
@@ -11,7 +12,7 @@ export const verifyUserSchema = Joi.object({
 });
 
 export const forgotPasswordSchema = Joi.object({
-  emailId: Joi.string().email().required(),
+  email: Joi.string().email().required(),
 });
 
 export const resetPasswordSchema = Joi.object({

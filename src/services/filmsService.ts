@@ -22,8 +22,8 @@ export class FilmsService {
     return response;
   }
 
-  static async getFilmById(id: string) {
-    const response = await FilmsModel.findById({ _id: id });
+  static async getFilmById(movieId: string) {
+    const response = await FilmsModel.findById({ _id: movieId });
     return response;
   }
 

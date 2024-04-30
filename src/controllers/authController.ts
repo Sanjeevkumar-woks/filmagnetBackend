@@ -12,14 +12,17 @@ import { HttpError } from "http-errors";
 import Joi from "joi";
 
 export async function signup(req: Request, res: Response) {
-  const { emailId, password } = req.body;
+
+  console.log(req.body)
+  const { email, password } = req.body;
+  console.log("body",req.body)
   validateJoiSchema({
     schema: loginSchema,
-    data: { emailId, password },
+    data: { email, password },
   });
 
   const data = await authService.signUp({
-    emailId,
+    email,
     password,
   });
   res.send(data);
@@ -27,6 +30,7 @@ export async function signup(req: Request, res: Response) {
 
 export async function verifyUser(req: Request, res: Response) {
   const { token, userPassword } = req.body;
+  console.log("token",token,userPassword)
   validateJoiSchema({
     schema: verifyUserSchema,
     data: { token, userPassword },
@@ -37,15 +41,15 @@ export async function verifyUser(req: Request, res: Response) {
 }
 
 export async function login(req: Request, res: Response) {
-  const { emailId, password, rememberMe } = req.body;
+  const { email, password, rememberMe } = req.body;
 
   validateJoiSchema({
     schema: loginSchema,
-    data: { emailId, password, rememberMe },
+    data: { email, password, rememberMe },
   });
 
   const data = await authService.login({
-    emailId,
+    email,
     password,
     rememberMe,
   });
@@ -67,12 +71,12 @@ export async function login(req: Request, res: Response) {
 }
 
 export async function forgotPassword(req: Request, res: Response) {
-  const { emailId } = req.body;
+  const { email } = req.body;
   validateJoiSchema({
     schema: forgotPasswordSchema,
-    data: { emailId },
+    data: { email },
   });
-  await authService.forgotPassword({ emailId });
+  await authService.forgotPassword({ email });
   res.send({ message: "Password reset link sent to your email" });
 }
 
@@ -90,7 +94,7 @@ export async function resetPassword(req: Request, res: Response) {
 
 export async function refreshToken(req: Request, res: Response) {
   const refreshToken =
-    process.env.NODE_ENV === "production"
+  process.env.NODE_ENV === "production"
       ? req.cookies?.refreshToken
       : req.cookies?.refreshTokenDev;
 

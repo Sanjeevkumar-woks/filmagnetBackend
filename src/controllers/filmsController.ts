@@ -48,15 +48,16 @@ export class FilmsController {
   }
 
   static async getFilmById(req: Request, res: Response) {
-    const { id } = req.params;
+    const { movieId } = req.query;
+    console.log(movieId, "movieId==>");
     validateJoiSchema({
       schema: Joi.object({
-        id: Joi.string().hex().length(24).required(),
+        movieId: Joi.string().hex().length(24).required(),
       }),
       data: req.params,
     });
 
-    const response = await FilmsService.getFilmById(id);
+    const response = await FilmsService.getFilmById(movieId as string);
     res.send(response);
   }
 
